@@ -10,7 +10,19 @@ import Artplayer from 'artplayer';
 import Hls from 'hls.js';
 
 const API_BASE = 'https://animeapi-sage.vercel.app';
-const CORS_PROXY = 'https://m3u8-proxy-cors-inky-ten.vercel.app/cors?url=';
+const CORS_PROXY = '/api/hls-proxy?b64=';
+
+const encodeProxyTarget = (url: string) => {
+  const bytes = new TextEncoder().encode(url);
+  let binary = '';
+  bytes.forEach((byte) => {
+    binary += String.fromCharCode(byte);
+  });
+
+  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+};
+
+const buildProxyUrl = (url: string) => `${CORS_PROXY}${encodeProxyTarget(url)}`;
 
 const PLAYBACK_SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 2];
 
@@ -431,9 +443,10 @@ const VideoPlayer = () => {
               } : {}),
         customType: {
           m3u8: function (video: HTMLVideoElement, url: string) {
-                if (Hls.isSupported()) {
-                  const proxiedUrl = CORS_PROXY + encodeURIComponent(url);
-                    const hls = new Hls({
+                  if (Hls.isSupported()) {
+                    const proxiedUrl = buildProxyUrl(url);
+                      const hls = new Hls({
+
                         enableWorker: true,
                         lowLatencyMode: true,
                         maxBufferLength: 15,
@@ -457,10 +470,11 @@ const VideoPlayer = () => {
                         levelLoadingTimeOut: 8000,
                         levelLoadingMaxRetry: 3,
                         startFragPrefetch: true,
-                    xhrSetup: (xhr: XMLHttpRequest, xhrUrl: string) => {
-                      const finalUrl = xhrUrl.startsWith(CORS_PROXY) ? xhrUrl : CORS_PROXY + encodeURIComponent(xhrUrl);
-                      xhr.open('GET', finalUrl, true);
-                    },
+                      xhrSetup: (xhr: XMLHttpRequest, xhrUrl: string) => {
+                        const finalUrl = xhrUrl.startsWith(CORS_PROXY) ? xhrUrl : buildProxyUrl(xhrUrl);
+                        xhr.open('GET', finalUrl, true);
+                      },
+
                   });
 
                   hlsInstanceRef.current = hls;
@@ -497,9 +511,10 @@ const VideoPlayer = () => {
                     setIsLoading(false);
                   }
                 });
-              } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                video.src = url;
-              }
+                } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                  video.src = buildProxyUrl(url);
+                }
+
             },
           },
       });

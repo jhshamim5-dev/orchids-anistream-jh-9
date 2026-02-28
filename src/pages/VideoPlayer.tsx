@@ -10,7 +10,7 @@ import Artplayer from 'artplayer';
 import Hls from 'hls.js';
 
 const API_BASE = 'https://animeapi-sage.vercel.app';
-const CORS_PROXY = '/api/hls-proxy?b64=';
+const CORS_PROXY = '/hls-proxy?b64=';
 
 const encodeProxyTarget = (url: string) => {
   const bytes = new TextEncoder().encode(url);

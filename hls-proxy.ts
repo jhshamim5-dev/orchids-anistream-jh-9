@@ -6,7 +6,7 @@ import { URL } from "node:url";
 const REFERERS = ["https://hianime.to/", "https://megacloud.com/"];
 const USER_AGENT =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36";
-const PROXY_PATH = "/api/hls-proxy";
+const PROXY_PATH = "/hls-proxy";
 
 const hopByHopHeaders = new Set([
   "connection",

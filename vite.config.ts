@@ -7,7 +7,7 @@ import * as https from "node:https";
 import type { IncomingMessage, RequestOptions } from "node:http";
 import { URL } from "node:url";
 
-const PROXY_ROUTES = new Set(["/__proxy/hls", "/api/hls-proxy"]);
+const PROXY_ROUTES = new Set(["/__proxy/hls", "/hls-proxy"]);
 const REFERERS = ["https://hianime.to/", "https://megacloud.com/"];
 const USER_AGENT =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36";
@@ -61,7 +61,7 @@ const rewriteManifest = (manifest: string, manifestUrl: string) => {
       }
 
         const absoluteUrl = new URL(trimmed, manifestUrl).toString();
-        const proxied = `/api/hls-proxy?b64=${base64UrlEncode(absoluteUrl)}`;
+        const proxied = `/hls-proxy?b64=${base64UrlEncode(absoluteUrl)}`;
         return line.replace(trimmed, proxied);
     })
     .join("\n");
